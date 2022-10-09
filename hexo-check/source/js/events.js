@@ -165,3 +165,49 @@ Fluid.events = {
     `);
   }
 };
+
+  const siblings = (ele, selector) => {
+    return [...ele.parentNode.children].filter((child) => {
+      if (selector) {
+        return child !== ele && child.matches(selector)
+      }
+      return child !== ele
+    })
+  }
+
+  const tabsFn = {
+    clickFnOfTabs: function () {
+      document.querySelectorAll(' .tab > button').forEach(function (item) {
+        item.addEventListener('click', function (e) {
+          const $this = this
+          const $tabItem = $this.parentNode
+
+          if (!$tabItem.classList.contains('active')) {
+            const $tabContent = $tabItem.parentNode.nextElementSibling
+            const $siblings = siblings($tabItem, '.active')[0]
+            $siblings && $siblings.classList.remove('active')
+            $tabItem.classList.add('active')
+            const tabId = $this.getAttribute('data-href').replace('#', '')
+            const childList = [...$tabContent.children]
+            childList.forEach(item => {
+              if (item.id === tabId) item.classList.add('active')
+              else item.classList.remove('active')
+            })
+            const $isTabJustifiedGallery = $tabContent.querySelectorAll(`#${tabId} .fj-gallery`)
+            if ($isTabJustifiedGallery.length > 0) {
+              btf.initJustifiedGallery($isTabJustifiedGallery)
+            }
+          }
+        })
+      })
+    },
+    backToTop: () => {
+      document.querySelectorAll(' .tabs .tab-to-top').forEach(function (item) {
+        item.addEventListener('click', function () {
+          btf.scrollToDest(btf.getEleTop(btf.getParents(this, '.tabs')), 300)
+        })
+      })
+    }
+}
+tabsFn.clickFnOfTabs()
+tabsFn.backToTop()
